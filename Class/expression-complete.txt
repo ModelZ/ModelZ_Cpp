@@ -1,0 +1,199 @@
+string LinkedStack::infixToPostfix(string infix)
+{
+    // temp char
+    char oneChar;
+
+    // set postfix to empty string
+    string postfix = "";
+
+    // clear stack
+    clear();
+
+    // scan each character in infix string from left to right
+    for (int i = 0; i < (int)infix.length(); i ++)
+    {
+        // check character infix[i]
+        switch(infix[i])
+        {
+        // space, do nothing
+        case ' ':
+            break;
+
+        // '(': alway push to stack
+        case '(':
+            push((int)infix[i]);
+            break;
+
+        // ')': recursive pop to postfix until '(' is found
+        case ')':
+            while ((oneChar = (char)pop()) != '(')
+                postfix += oneChar + string(" ");
+            break;
+
+        // '+', '-'
+        case '+': case '-':
+            // stack is empty, push to stack
+            if (isEmpty())
+                push((int)infix[i]);
+
+            // stack is not empty
+            else
+            {
+                // check top of stack
+                switch (top())
+                {
+                // '(', push to stack
+                case '(':
+                // top < operator, push to stack
+                    push((int)infix[i]);
+                    break;
+
+                // top >= operator, pop to postfix and push to stack
+                case '+': case '-': case '*': case '/': case '^':
+                    postfix += (char)pop() + string(" ");
+                    push((int)infix[i]);
+                    break;
+                }
+            }
+            break;
+
+        // '*', '/'
+        case '*': case '/':
+            // stack is empty, push stack
+            if (isEmpty())
+                push((int)infix[i]);
+
+            // stack is not empty
+            else
+            {
+                // check top of stack
+                switch (top())
+                {
+                // '(', push to stack
+                case '(':
+                // top < operator, push to stack
+                case '+': case '-':
+                    push((int)infix[i]);
+                    break;
+
+                // top >= operator, pop to postfix and push to stack
+                case '*': case '/': case '^':
+                    postfix += (char)pop() + string(" ");
+                    push((int)infix[i]);
+                    break;
+                }
+            }
+            break;
+
+         // '^'
+        case '^':
+            // stack is empty, push to stack
+            if (isEmpty())
+                push((int)infix[i]);
+
+            // stack is not empty
+            else
+            {
+                // check top of stack
+                switch(top())
+                {
+                // '(', push to stack
+                case '(':
+                // top < operator, push to stack
+                case '+': case '-': case '*': case '/':
+                    push((int)infix[i]);
+                    break;
+
+                // top >= operator, pop to postfix and push to stack
+                case '^':
+                    postfix += (char)pop() + string(" ");
+                    push((int)infix[i]);
+                    break;
+                }
+            }
+            break;
+
+        // operand: append to postfix
+        default:
+            postfix += infix[i] + string(" ");
+            break;
+        }
+    }
+
+    // recursive pop to postfix until stack is empty
+    while (!isEmpty())
+        postfix += (char)pop() + string(" ");
+
+    // return postfix
+    return postfix;
+}
+
+float LinkedStack::executePostfix(string postfix)
+{
+    float result = 0;
+
+    float *fpOperand = new float[2];
+    int *ipOperand = (int *)fpOperand;
+
+    // clear stack
+    clear();
+
+    // scan each character in postfix from left to right
+    for (int i = 0; i < (int)postfix.length(); i ++)
+    {
+        // check character postfix[i]
+        switch (postfix[i])
+        {
+        case ' ':
+            break;
+
+        // operator: pop two, do operation, push back to stack
+        case '+':
+            ipOperand[1] = pop(); // pop top two
+            ipOperand[0] = pop();
+            fpOperand[0] += fpOperand[1]; // addition
+            push(ipOperand[0]);   // push
+            break;
+
+        case '-':
+            ipOperand[1] = pop(); // pop top two
+            ipOperand[0] = pop();
+            fpOperand[0] -= fpOperand[1]; // subtraction
+            push(ipOperand[0]);   // push
+            break;
+        case '*':
+            ipOperand[1] = pop(); // pop top two
+            ipOperand[0] = pop();
+            fpOperand[0] *= fpOperand[1]; // multiplication
+            push(ipOperand[0]);   // push
+            break;
+        case '/':
+            ipOperand[1] = pop(); // pop top two
+            ipOperand[0] = pop();
+            fpOperand[0] /= fpOperand[1]; // division
+            push(ipOperand[0]);   // push
+            break;
+        case '^':
+            ipOperand[1] = pop(); // pop top two
+            ipOperand[0] = pop();
+            fpOperand[0] = pow(fpOperand[0], fpOperand[1]); // exponentiation
+            push(ipOperand[0]);   // push
+            break;
+
+        // operand: push to stack
+        default:
+            fpOperand[0] = postfix[i] - '0';
+            push(ipOperand[0]);
+        }
+    }
+
+    // pop final result
+    ipOperand[0] = pop();
+    result = fpOperand[0];
+
+    // free mem
+    delete [ ]fpOperand;
+
+    // return result
+    return result;
+}

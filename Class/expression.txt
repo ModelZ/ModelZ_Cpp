@@ -1,0 +1,54 @@
+string LinkedStack::infixToPostfix(string infix)
+{
+    // set postfix to empty string
+    // clear stack
+    // scan each character in infix string from left to right
+        // check character infix[i]
+            // '(': alway push to stack
+            // ')': recursive pop to postfix until '(' is found
+            // '+', '-'
+                // stack is empty, push to stack
+                // stack is not empty
+                    // check top of stack
+                        // '(', push to stack
+                        // top < operator, push to stack
+                        // top >= operator, pop to postfix and push to stack
+            // '*', '/'
+                // stack is empty, push stack
+                // stack is not empty
+                    // check top of stack
+                        // '(', push to stack
+                        // top < operator, push to stack
+                        // top >= operator, pop to postfix and push to stack
+            // '^'
+                // stack is empty, push to stack
+                // stack is not empty
+                    // check top of stack
+                        // '(', push to stack
+                        // top < operator, push to stack
+                        // top >= operator, pop to postfix and push to stack
+            // operand: append to postfix
+    // recursive pop to postfix until stack is empty
+    // return postfix
+}
+
+float LinkedStack::executePostfix(string postfix)
+{
+    // clear stack
+    // scan each character in postfix from left to right
+        // check character postfix[i]
+            // operator: pop two, do operation, push back to stack
+            // operand: push to stack
+    // pop final result
+    // return result
+}
+
+
+string infix = "((3+6)*4/2-2^3)/5";
+string postfix = stack.infixToPostfix(infix);
+cout << "infix  : " << infix << endl;
+cout << "postfix: " << postfix << endl;
+
+float value = stack.executePostfix(postfix);
+cout << "result:  " << value << endl;
+
